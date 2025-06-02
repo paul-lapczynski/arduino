@@ -153,6 +153,7 @@ public:
 
 private:
     CRGB *mLeds;
+    //
     int mLoopRange[NUM_LEDS_PER_PANEL];
     bool mDelluminating = false;
     int mMinBrightness = 20;
