@@ -1,4 +1,5 @@
 #include <FastLED.h>
+#include <Keyboard.h>
 #ifndef DDRPad_h
 #define DDRPad_h
 
@@ -21,6 +22,9 @@ public:
     DDRPanel(CRGB *leds, Panel panel)
     {
         this->mLeds = leds;
+        this->mPanel = panel;
+        this->setKey(panel);
+
         int skip = NUM_LEDS_PER_PANEL * panel;
         for (int i = 0; i < NUM_LEDS_PER_PANEL; i++)
         {
@@ -30,14 +34,15 @@ public:
         this->mColor = (panel % 2) == 0 ? PINK : BLUE;
     }
 
-    void loop(bool buttonPress)
+    void loop(int forceValue)
     {
         unsigned long now = millis();
 
         if (this->mOn)
         {
-            if (!buttonPress)
+            if (this->shouldTurnOff(forceValue))
             {
+                this->releaseKey();
                 this->beginDelluminate();
             }
             else
@@ -47,8 +52,9 @@ public:
         }
         else
         {
-            if (buttonPress)
+            if (this->shouldTurnOn(forceValue))
             {
+                this->pressKey();
                 this->mOn = true;
                 this->mDelluminating = false;
                 this->mCurrentBrightness = 255;
@@ -151,6 +157,45 @@ public:
         return this->mColor;
     }
 
+    bool shouldTurnOn(int forceValue)
+    {
+        return forceValue > this->mPressThreshold;
+    }
+
+    bool shouldTurnOff(int forceValue)
+    {
+        return forceValue < (this->mPressThreshold - this->mReleaseBuffer);
+    }
+
+    void pressKey(void)
+    {
+        Keyboard.press(this->mKey);
+    }
+
+    void releaseKey(void)
+    {
+        Keyboard.release(this->mKey);
+    }
+
+    void setKey(Panel panel)
+    {
+        switch (panel)
+        {
+        case Panel::Down:
+            this->mKey = KEY_DOWN_ARROW;
+            break;
+        case Panel::Left:
+            this->mKey = KEY_LEFT_ARROW;
+            break;
+        case Panel::Right:
+            this->mKey = KEY_RIGHT_ARROW;
+            break;
+        case Panel::Up:
+            this->mKey = KEY_UP_ARROW;
+            break;
+        }
+    }
+
 private:
     CRGB *mLeds;
     //
@@ -164,6 +209,11 @@ private:
     int mFadeIntervalMs = 25;
     int mFadeStep = 30;
     CRGB mColor;
+
+    int mPressThreshold = 200;
+    int mReleaseBuffer = 20;
+    Panel mPanel;
+    int mKey;
 };
 
 template <int NUM_LEDS_PER_PANEL, int LED_DATA_PIN>

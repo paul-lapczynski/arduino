@@ -1,13 +1,13 @@
-/* FSR testing sketch. 
+/* FSR testing sketch.
 
 Connect one end of FSR to 5V, the other end to Analog 0.
 Then connect one end of a 10K resistor from d 0 to ground
-Connect LED from pin 11 through a resistor to ground 
- 
+Connect LED from pin 11 through a resistor to ground
+
 For more information see www.ladyada.net/learn/sensors/fsr.html */
 // #include <Keyboard.h>
 #include <FastLED.h>
-
+#include <Keyboard.h>
 // int fsrAnalogPin = 0;     // FSR is connected to analog 0
 // int LEDpin = 11;          // connect Red LED to pin 11 (PWM pin)
 // int fsrReading;           // the analog reading from the FSR resistor divider
@@ -23,20 +23,22 @@ For more information see www.ladyada.net/learn/sensors/fsr.html */
 
 #include "DDRPad.h";
 
-#define LED_PIN 6           // Pin where your WS2811 data line is connected
-#define NUM_LEDS_PER_PAD 9  // Total number of LEDs in the strip
+#define LED_PIN 6          // Pin where your WS2811 data line is connected
+#define NUM_LEDS_PER_PAD 9 // Total number of LEDs in the strip
 
 #define BRIGHTNESS 200
-#define COLOR_ORDER GRB  // WS2811s typically use GRB
+#define COLOR_ORDER GRB // WS2811s typically use GRB
 
 CRGB leds[NUM_LEDS_PER_PAD * 4];
 
 DDRPad<NUM_LEDS_PER_PAD, LED_PIN> pad(leds);
 
-void setup(void) {
+void setup(void)
+{
   pinMode(3, INPUT_PULLUP);
   Serial.begin(9600);
   pad.Begin();
+  Keyboard.begin();
 
   pinMode(A0, INPUT_PULLUP);
   pinMode(A1, INPUT_PULLUP);
@@ -44,23 +46,17 @@ void setup(void) {
   pinMode(A3, INPUT_PULLUP);
 }
 
-void loop(void) {
-  analogRead(A0);
+void loop(void)
+{
   int buttonPress1 = analogRead(A0);
-  analogRead(A1);
-
   int buttonPress2 = analogRead(A1);
-  analogRead(A2);
-
   int buttonPress3 = analogRead(A2);
-  analogRead(A3);
-
   int buttonPress4 = analogRead(A3);
 
-  pad.right.loop(buttonPress1 > 200);
-  pad.down.loop(buttonPress2 > 200);
-  pad.left.loop(buttonPress3 > 200);
-  pad.up.loop(buttonPress4 > 200); 
+  pad.right.loop(buttonPress1);
+  pad.down.loop(buttonPress2);
+  pad.left.loop(buttonPress3);
+  pad.up.loop(buttonPress4);
   // Serial.println("Reading All:");
   // Serial.println("=========");
   // Serial.println(buttonPress1);
@@ -72,7 +68,6 @@ void loop(void) {
 
   // delay(50);
 }
-
 
 // void bootSequence(void) {
 //   for (int i = 0; i < NUM_LEDS; i++) {
@@ -92,8 +87,6 @@ void loop(void) {
 //     FastLED.show();
 //     delay(1);
 //   }
-
-
 
 //   delay(5000);
 // for (int i = 0; i <= 4; i++) {

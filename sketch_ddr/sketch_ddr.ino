@@ -7,7 +7,6 @@ Connect LED from pin 11 through a resistor to ground
 For more information see www.ladyada.net/learn/sensors/fsr.html */
 
 #include <Keyboard.h>
-
 int fsrAnalogPin = 0;  // FSR is connected to analog 0
 int LEDpin = 11;       // connect Red LED to pin 11 (PWM pin)
 int fsrReading;        // the analog reading from the FSR resistor divider
